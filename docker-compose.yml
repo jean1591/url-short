@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: url-short-db
+    env_file:
+      - ./.env
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user_api -d url_short']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - url-short-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    container_name: url-short-backend
+    env_file:
+      - ./.env
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_URL: postgresql://user_api:Uj520^@postgres:5432/url_short
+    ports:
+      - '3000:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+    networks:
+      - url-short-network
+    command: npm run dev
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  url-short-network:
+    driver: bridge
