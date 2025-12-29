@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from 'express';
 
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { errorHandler } from '@/api/middlewares';
 
 dotenv.config();
 
@@ -22,6 +23,9 @@ app.get('/health', (_req: Request, res: Response) => {
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: 'Route not found' });
 });
+
+// Global error handler (must be last)
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
