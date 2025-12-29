@@ -11,7 +11,7 @@ export function toShortenUrlResponseDto(url: Url): ShortenUrlResponseDto {
 
   return {
     shortCode: url.shortCode,
-    shortUrl: `${baseUrl}/${url.shortCode}`,
+    shortUrl: `${baseUrl}/api/url/${url.shortCode}`,
     longUrl: url.longUrl,
   };
 }
